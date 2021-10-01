@@ -2,7 +2,7 @@
 const hre = require('hardhat')
 const ethers = require('ethers')
 
-function genRandomBytecode(size) {
+function genRandomBytecode (size) {
   const bytecode = ethers.utils.randomBytes(size)
 
   if (bytecode[0] === 239) {
@@ -29,10 +29,10 @@ async function main () {
   const csvWriter = createCsvWriter({
     path: './cost.csv',
     header: [
-        { id: 'size', title: 'SIZE' },
-        { id: 'create1', title: 'CREATE1' },
-        { id: 'create2', title: 'CREATE2' },
-        { id: 'create3', title: 'CREATE3' }
+      { id: 'size', title: 'SIZE' },
+      { id: 'create1', title: 'CREATE1' },
+      { id: 'create2', title: 'CREATE2' },
+      { id: 'create3', title: 'CREATE3' }
     ]
   })
 
@@ -64,7 +64,6 @@ async function main () {
 
     await csvWriter.writeRecords([{ size: i, create1: c1.toString(), create2: c2.toString(), create3: c3.toString() }])
   }
-  
 }
 
 // We recommend this pattern to be able to use async/await everywhere
