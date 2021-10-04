@@ -4,8 +4,9 @@
     "test": "hardhat test",
     "lint": "eslint .",
     "build": "hardhat compile",
-    "plot": "NODE_OPTIONS=--max-old-space-size=32000 node scripts/plot.js",
-    "coverage": "COVERAGE=true hardhat coverage"
+    "plot": "NODE_OPTIONS=--max-old-space-size=32000 hardhat run scripts/plot.js --max-memory 32000",
+    "coverage": "COVERAGE=true hardhat coverage",
+    "deploy": "export $(grep -v '^#' ./config/prod.env | xargs) && hardhat run scripts/deploy.js --network"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

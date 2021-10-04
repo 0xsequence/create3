@@ -59,6 +59,13 @@ describe('Create3', () => {
     await expect(tx).to.be.reverted
   })
 
+  it('Should forward payable amount to child contract', async () => {
+    const bytecode = genRandomBytecode(211)
+    await create3.create(ethers.constants.HashZero, bytecode, { value: 2 })
+    const address = await create3.addressOf(users[0].address, ethers.constants.HashZero)
+    expect(await ethers.provider.getBalance(address)).to.equal(2)
+  })
+
   it('Should empty buffer after deployment', async () => {
     const bytecode = genRandomBytecode(24576)
 
