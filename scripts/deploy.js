@@ -7,7 +7,7 @@ const fs = require('fs')
 const create3 = require('../artifacts/contracts/Create3.sol/Create3.json')
 
 const txParams = {
-  gasLimit: 6000000
+  gasLimit: 500000
 }
 
 class Create3Factory extends ethers.ContractFactory {

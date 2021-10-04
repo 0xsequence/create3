@@ -1,5 +1,11 @@
 {
-  "name": "create3",
+  "name": "@0xsequence/create3",
+  "files": [
+    "/contracts/**/*.sol",
+    "/artifacts/contracts/*.json",
+    "/networks/**/*",
+    "!/contracts/test_utils/**/*"
+  ],
   "scripts": {
     "test": "hardhat test",
     "lint": "eslint .",
