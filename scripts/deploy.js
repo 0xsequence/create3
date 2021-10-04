@@ -18,9 +18,9 @@ class Create3Factory extends ethers.ContractFactory {
 
 const attempVerify = async (name, address, ...args) => {
   try {
-    await run("verify:verify", {
+    await run('verify:verify', {
       address: address,
-      constructorArguments: args,
+      constructorArguments: args
     })
   } catch (e) {
     console.info('error etherscan verify', e)
@@ -50,10 +50,10 @@ async function main () {
 
   prompt.info(`writing deployment information to ${network.name}.json`)
   fs.writeFileSync(`./networks/${network.name}.json`, JSON.stringify(buildNetworkJson(
-    { name: "Create3", address: create3Factory.address },
+    { name: 'Create3', address: create3Factory.address }
   )))
 
-  prompt.info(`verifying contracts`)
+  prompt.info('verifying contracts')
   await attempVerify('Create3', create3Factory.address)
 }
 
