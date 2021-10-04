@@ -1,5 +1,6 @@
 {
   "name": "@0xsequence/create3",
+  "version": "1.0.0",
   "files": [
     "/contracts/**/*.sol",
     "/artifacts/contracts/*.json",
