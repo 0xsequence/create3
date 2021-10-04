@@ -2,11 +2,11 @@
 
 [![tests](https://github.com/0xsequence/create3/actions/workflows/tests.yml/badge.svg)](https://github.com/0xsequence/create3/actions/workflows/tests.yml)
 
-This contract library enables EVM contract creation in a similar way to CREATE2, but without including the contract `initCode` on the address derivation formula. It can be used to generate deterministic contract addresses that aren't tied to a specific contract implementation.
+This contract library enables EVM contract creation in a similar way to CREATE2, but without including the contract `initCode` on the address derivation formula. It can be used to generate deterministic contract addresses that aren't tied to a specific contract code.
 
 ### Features
 
-- Deterministic contract address based on msg.sender + salt
+- Deterministic contract address based on `msg.sender` + salt
 - Same contract addresses on different EVM networks
 - Lightway and without clutter
 - Supports any EVM compatible chain with support for CREATE2
@@ -17,6 +17,8 @@ This contract library enables EVM contract creation in a similar way to CREATE2,
 - Constructors are not supported
 - More expensive than CREATE or CREATE2 (2x or 3x, it depends)
 - Etherscan child contract verification may not be supported
+
+![CREATE3 Cost](cost.png)
 
 ## Usage
 
