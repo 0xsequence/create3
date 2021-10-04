@@ -15,7 +15,7 @@ This contract library enables EVM contract creation in a similar way to CREATE2,
 ### Limitations
 
 - Constructors are not supported
-- More expensive than CREATE or CREATE2 (2x or 3x, it depends)
+- More expensive than CREATE or CREATE2 (~3.5x)
 - Etherscan child contract verification may not be supported
 
 ![CREATE3 Cost](cost.png)
