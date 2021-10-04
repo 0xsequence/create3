@@ -67,12 +67,14 @@ describe('Create3', () => {
     expect(await ethers.provider.call({ to: create3.address })).to.equal('0x')
   })
 
-  it('Should fail to deploy contract above EIP-170 limit', async () => {
-    const bytecode = genRandomBytecode(24577)
+  if (!process.env.COVERAGE) {
+    it('Should fail to deploy contract above EIP-170 limit', async () => {
+      const bytecode = genRandomBytecode(24577)
 
-    const tx = create3.create(ethers.constants.HashZero, bytecode, { gasLimit: 28000000 })
-    await expect(tx).to.be.reverted
-  })
+      const tx = create3.create(ethers.constants.HashZero, bytecode, { gasLimit: 28000000 })
+      await expect(tx).to.be.reverted
+    })
+  }
 
   it('Should empty buffer after deployment', async () => {
     const bytecode = genRandomBytecode(24576)

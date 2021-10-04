@@ -6,3 +6,6 @@ cache
 artifacts
 
 cost.csv
+
+coverage.json
+coverage

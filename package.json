@@ -4,7 +4,8 @@
     "test": "hardhat test",
     "lint": "eslint .",
     "build": "hardhat compile",
-    "plot": "node scripts/plot.js --max-old-space-size=64768"
+    "plot": "NODE_OPTIONS=--max-old-space-size=32000 node scripts/plot.js",
+    "coverage": "COVERAGE=true hardhat coverage"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
