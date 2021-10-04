@@ -32,7 +32,7 @@ contract Child {
 }
 
 contract Deployer {
-  Create3 constant create3 = Create3(0x...);
+  Create3 constant create3 = Create3(0x2EEf3981d24db4E38751bF1A3D27783066A40A9C);
 
   function deployChild() external {
     create3.create(keccak256("<my salt>"), type(Child).runtimeCode);
