@@ -14,7 +14,7 @@ function genRandomBytecode (size) {
 
 async function main () {
   const OgCreates = await hre.ethers.getContractFactory('OgCreates')
-  const Create3 = await hre.ethers.getContractFactory('Create3')
+  const Create3 = await hre.ethers.getContractFactory('Create3Imp')
 
   const ogcreates = await OgCreates.deploy()
   const create3 = await Create3.deploy()
@@ -36,7 +36,7 @@ async function main () {
     ]
   })
 
-  for (let i = 0; i < bytecode.length; i++) {
+  for (let i = 1; i < bytecode.length; i++) {
     const slice = ethers.utils.hexlify(bytecode.slice(0, i))
 
     const c1 = await (async () => {
@@ -62,6 +62,7 @@ async function main () {
       return receipt.gasUsed
     })()
 
+    console.log(i, 'Diff...', c3.sub(c2).toString())
     await csvWriter.writeRecords([{ size: i, create1: c1.toString(), create2: c2.toString(), create3: c3.toString() }])
   }
 }

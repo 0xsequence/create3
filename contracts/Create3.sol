@@ -2,96 +2,100 @@
 pragma solidity ^0.8.0;
 
 
-contract Create3 {
+library Create3 {
+  error ErrorCreatingProxy();
   error ErrorCreatingContract();
+  error TargetAlreadyExists();
 
-  function bytecode() private view returns (bytes memory) {
+  function creationCodeFor(bytes memory _code) internal pure returns (bytes memory) {
     /*
-      3D RETURNDATASIZE (0) // retLength = 0
-      80 DUP1               // retOffset = 0
-      80 DUP1               // argsLength = 0
-      80 DUP1               // argsOffset = 0
-      80 DUP1               // value = 0
-      73 PUSH20 <self>      // to = address(this)
-      80 DUP1               // gas = address(this)
-      F1 CALL               // call address(this) from init code
-      3D RETURNDATASIZE     // code size
-      60 PUSH1 00           // offset
-      80 DUP1               // destOffset
-      3E RETURNDATACOPY     // copy returned code
-      3D RETURNDATASIZE     // code size
-      60 PUSH1 00           // offset
-      F3 RETURN
+      0x00    0x63         0x63XXXXXX  PUSH4 _code.length  size
+      0x01    0x80         0x80        DUP1                size size
+      0x02    0x60         0x600e      PUSH1 14            14 size size
+      0x03    0x60         0x6000      PUSH1 00            0 14 size size
+      0x04    0x39         0x39        CODECOPY            size
+      0x05    0x60         0x6000      PUSH1 00            0 size
+      0x06    0xf3         0xf3        RETURN
+      <CODE>
     */
+
     return abi.encodePacked(
-      hex"3D_80_80_80_80_73",
-      address(this),
-      hex"80_F1_3D_60_00_80_3E_3D_60_00_F3"
+      hex"63",
+      uint32(_code.length),
+      hex"80_60_0E_60_00_39_60_00_F3",
+      _code
     );
   }
-  
-  function create(bytes32 _salt, bytes calldata _code) external payable returns (address addr) {
-    // Creation code
-    bytes memory creationCode = bytecode();
-    
-    // CREATE2 salt uses msg.sender + provided salt
-    bytes32 salt = keccak256(abi.encodePacked(msg.sender, _salt));
 
-    // Store _code in buffer
-    assembly {
-      let codeSize := _code.length
-
-      sstore(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, codeSize)
-      let offSet := _code.offset
-
-      for
-        { let i := 0 }
-        lt(i, codeSize)
-        { i := add(i, 0x20) }
-      {
-        sstore(i, calldataload(add(offSet, i)))
-      }
-
-      // Call CREATE2 contract
-      addr := create2(callvalue(), add(creationCode, 32), mload(creationCode), salt)
-    }
-
-    if (addr == address(0)) revert ErrorCreatingContract();
+  function childBytecode() internal pure returns (bytes memory) {
+    /*
+      0x00    0x36         0x36      CALLDATASIZE      cds
+      0x01    0x3d         0x3d      RETURNDATASIZE    0 cds
+      0x02    0x80         0x80      DUP1              0 0 cds
+      0x03    0x37         0x37      CALLDATACOPY
+      0x04    0x36         0x36      CALLDATASIZE      cds
+      0x05    0x3d         0x3d      RETURNDATASIZE    0 cds
+      0x06    0x34         0x34      CALLVALUE         val 0 cds
+      0x07    0xf0         0xf0      CREATE            addr
+      0x08    0xff         0xff      SELFDESTRUCT
+    */
+    return creationCodeFor(hex"36_3d_80_37_36_3d_34_f0_ff");
   }
-  
-  function addressOf(address _sender, bytes32 _salt) external view returns (address) {
-    return address(
+
+  function codeSize(address _addr) internal view returns (uint256 size) {
+    assembly { size := extcodesize(_addr) }
+  }
+
+  function create3(bytes32 _salt, bytes memory _creationCode) internal returns (address addr) {
+    return create3(_salt, _creationCode, 0);
+  }
+
+  function create3(bytes32 _salt, bytes memory _creationCode, uint256 _value) internal returns (address addr) {
+    // Creation code
+    bytes memory creationCode = childBytecode();
+
+    // Get target final address
+    addr = addressOf(_salt);
+    if (codeSize(addr) != 0) revert TargetAlreadyExists();
+
+    // Create CREATE2 proxy
+    address proxy; assembly { proxy := create2(_value, add(creationCode, 32), mload(creationCode), _salt)}
+    if (proxy == address(0)) revert ErrorCreatingProxy();
+
+    // Call proxy with final init code
+    (bool success,) = proxy.call(_creationCode);
+    if (!success || codeSize(addr) == 0) revert ErrorCreatingContract();
+  }
+
+  function addressOf(bytes32 _salt) internal view returns (address) {
+    address proxy = address(
       uint160(
         uint256(
           keccak256(
             abi.encodePacked(
               hex'ff',
               address(this),
-              keccak256(abi.encodePacked(_sender, _salt)),
-              keccak256(bytecode())
+              _salt,
+              keccak256(childBytecode())
             )
           )
         )
       )
     );
-  }
 
-  fallback() external {
-    assembly {
-      // Consume buffer
-      let size := sload(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
-      sstore(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, 0)
-
-      for
-        { let i := 0 }
-        lt(i, size)
-        { i := add(i, 0x20) }
-      {
-        mstore(i, sload(i))
-        sstore(i, 0)
-      }
-  
-      return(0, size)
-    }
+    return address(
+      uint160(
+        uint256(
+          keccak256(
+            abi.encodePacked(
+              hex"d6",
+              hex"94",
+              proxy,
+              hex"01"
+            )
+          )
+        )
+      )
+    );
   }
 }
