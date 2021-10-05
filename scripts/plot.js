@@ -14,7 +14,7 @@ function genRandomBytecode (size) {
 
 async function main () {
   const OgCreates = await hre.ethers.getContractFactory('OgCreates')
-  const Create3 = await hre.ethers.getContractFactory('Create3')
+  const Create3 = await hre.ethers.getContractFactory('Create3Imp')
 
   const ogcreates = await OgCreates.deploy()
   const create3 = await Create3.deploy()
@@ -36,7 +36,7 @@ async function main () {
     ]
   })
 
-  for (let i = 0; i < bytecode.length; i++) {
+  for (let i = 1; i < bytecode.length; i++) {
     const slice = ethers.utils.hexlify(bytecode.slice(0, i))
 
     const c1 = await (async () => {

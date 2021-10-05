@@ -2,7 +2,7 @@ const { expect } = require('chai')
 const { ethers } = require('hardhat')
 
 async function deployCreate3 () {
-  const Create3 = await ethers.getContractFactory('Create3')
+  const Create3 = await ethers.getContractFactory('Create3Imp')
   const create3 = await Create3.deploy()
   await create3.deployed()
   return create3
@@ -26,19 +26,14 @@ describe('Create3', () => {
     users = await ethers.getSigners()
   })
 
-  it('Should give different addresses to different senders', async () => {
+  it('Should create contract', async () => {
     const bytecode1 = genRandomBytecode(911)
-    const bytecode2 = genRandomBytecode(211)
 
-    await create3.connect(users[1]).create(ethers.constants.HashZero, bytecode1)
-    await create3.connect(users[2]).create(ethers.constants.HashZero, bytecode2)
+    await create3.create(ethers.constants.HashZero, bytecode1)
 
-    const address1 = await create3.addressOf(users[1].address, ethers.constants.HashZero)
-    const address2 = await create3.addressOf(users[2].address, ethers.constants.HashZero)
+    const address1 = await create3.addressOf(ethers.constants.HashZero)
 
-    expect(address1).to.not.equal(address2)
     expect(await ethers.provider.getCode(address1)).to.equal(bytecode1)
-    expect(await ethers.provider.getCode(address2)).to.equal(bytecode2)
   })
 
   it('Should fail to create contract with invalid bytecode', async () => {
@@ -62,16 +57,8 @@ describe('Create3', () => {
   it('Should forward payable amount to child contract', async () => {
     const bytecode = genRandomBytecode(211)
     await create3.create(ethers.constants.HashZero, bytecode, { value: 2 })
-    const address = await create3.addressOf(users[0].address, ethers.constants.HashZero)
+    const address = await create3.addressOf(ethers.constants.HashZero)
     expect(await ethers.provider.getBalance(address)).to.equal(2)
-  })
-
-  it('Should empty buffer after deployment', async () => {
-    const bytecode = genRandomBytecode(24576)
-
-    await create3.create(ethers.constants.HashZero, bytecode, { gasLimit: 28000000 })
-
-    expect(await ethers.provider.call({ to: create3.address })).to.equal('0x')
   })
 
   if (!process.env.COVERAGE) {
@@ -83,21 +70,21 @@ describe('Create3', () => {
     })
   }
 
-  it('Should empty buffer after deployment', async () => {
-    const bytecode = genRandomBytecode(24576)
+  it('Should fail to create empty contract', async () => {
+    const bytecode = "0x"
+    const salt = ethers.utils.randomBytes(32)
 
-    await create3.create(ethers.constants.HashZero, bytecode, { gasLimit: 28000000 })
-
-    expect(await ethers.provider.call({ to: create3.address })).to.equal('0x')
+    const tx = create3.create(salt, bytecode)
+    await expect(tx).to.be.reverted
   })
 
   it('Should create contracts with all bytecode sizes between 0 and 2049', async () => {
     await Promise.all(new Array(2049).fill(0).map(async (_, i) => {
-      const bytecode = genRandomBytecode(i)
+      const bytecode = genRandomBytecode(i + 1)
       const salt = ethers.utils.randomBytes(32)
 
       await create3.create(salt, bytecode)
-      const address = await create3.addressOf(users[0].address, salt)
+      const address = await create3.addressOf(salt)
 
       expect(await ethers.provider.getCode(address)).to.equal(bytecode)
     }))
