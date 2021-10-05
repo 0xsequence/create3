@@ -62,7 +62,7 @@ async function main () {
       return receipt.gasUsed
     })()
 
-    console.log(i, "Diff...", c3.sub(c2).toString())
+    console.log(i, 'Diff...', c3.sub(c2).toString())
     await csvWriter.writeRecords([{ size: i, create1: c1.toString(), create2: c2.toString(), create3: c3.toString() }])
   }
 }
