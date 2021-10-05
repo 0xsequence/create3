@@ -39,7 +39,7 @@ library Create3 {
       0x07    0xf0         0xf0      CREATE            addr
       0x08    0xff         0xff      SELFDESTRUCT
     */
-    return Bytecode.creationCodeFor(hex"36_3d_80_37_36_3d_34_f0_ff");
+    return creationCodeFor(hex"36_3d_80_37_36_3d_34_f0_ff");
   }
 
   function codeSize(address _addr) internal view returns (uint256 size) {

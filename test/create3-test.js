@@ -19,11 +19,10 @@ function genRandomBytecode (size) {
 }
 
 describe('Create3', () => {
-  let { users, create3 } = {}
+  let { create3 } = {}
 
   beforeEach(async () => {
     create3 = await deployCreate3()
-    users = await ethers.getSigners()
   })
 
   it('Should create contract', async () => {
@@ -71,7 +70,7 @@ describe('Create3', () => {
   }
 
   it('Should fail to create empty contract', async () => {
-    const bytecode = "0x"
+    const bytecode = '0x'
     const salt = ethers.utils.randomBytes(32)
 
     const tx = create3.create(salt, bytecode)
