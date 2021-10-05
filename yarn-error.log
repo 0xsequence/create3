@@ -1,0 +1,71 @@
+Arguments: 
+  /home/agusx1211/.nvm/versions/node/v14.15.2/bin/node /home/agusx1211/.nvm/versions/node/v14.15.2/bin/yarn install
+
+PATH: 
+  /home/agusx1211/.local/bin:/home/agusx1211/.vscode-server/bin/7f6ab5485bbc008386c4386d08766667e155244e/bin:/home/agusx1211/.local/bin:/home/agusx1211/.nvm/versions/node/v14.15.2/bin:/home/agusx1211/.vscode-server/bin/7f6ab5485bbc008386c4386d08766667e155244e/bin:/home/agusx1211/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/usr/local/go/bin:/home/agusx1211/.yarn/bin:/home/agusx1211/.yarn/bin:/usr/local/go/bin:/home/agusx1211/.yarn/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.15.2
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/agusx1211/workspaces/create3/package.json: Unexpected token } in JSON at position 503
+      at JSON.parse (<anonymous>)
+      at /home/agusx1211/.nvm/versions/node/v14.15.2/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/home/agusx1211/.nvm/versions/node/v14.15.2/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /home/agusx1211/.nvm/versions/node/v14.15.2/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "@0xsequence/create3",
+    "files": [
+      "/contracts/**/*.sol",
+      "/artifacts/contracts/*.json",
+      "/networks/**/*",
+      "!/contracts/test_utils/**/*"
+    ],
+    "scripts": {
+      "test": "hardhat test",
+      "lint": "eslint .",
+      "build": "hardhat compile",
+      "plot": "NODE_OPTIONS=--max-old-space-size=32000 hardhat run scripts/plot.js --max-memory 32000",
+      "coverage": "COVERAGE=true hardhat coverage",
+      "prepare": "npm run clean && env COMPILE_MODE=production npm run compile",
+    },
+    "devDependencies": {
+      "@nomiclabs/hardhat-ethers": "^2.0.2",
+      "@nomiclabs/hardhat-waffle": "^2.0.1",
+      "chai": "^4.3.4",
+      "dotenv": "^10.0.0",
+      "eslint": "^7.32.0",
+      "eslint-config-prettier": "^8.3.0",
+      "eslint-config-standard": "^16.0.3",
+      "eslint-plugin-import": "^2.24.2",
+      "eslint-plugin-node": "^11.1.0",
+      "eslint-plugin-prettier": "^3.4.1",
+      "eslint-plugin-promise": "^5.1.0",
+      "ethereum-waffle": "^3.4.0",
+      "ethers": "^5.4.7",
+      "hardhat": "^2.6.4",
+      "hardhat-gas-reporter": "^1.0.4",
+      "prettier": "^2.4.1",
+      "prettier-plugin-solidity": "^1.0.0-beta.18",
+      "solhint": "^3.3.6",
+      "solidity-coverage": "^0.7.17"
+    },
+    "dependencies": {
+      "csv-writer": "^1.6.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
