@@ -1,8 +1,12 @@
 # CREATE3
 
 [![tests](https://github.com/0xsequence/create3/actions/workflows/tests.yml/badge.svg)](https://github.com/0xsequence/create3/actions/workflows/tests.yml)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+
 
 This contract library enables EVM contract creation in a similar way to CREATE2, but without including the contract `initCode` on the address derivation formula. It can be used to generate deterministic contract addresses that aren't tied to a specific contract code.
+
+[EIP-3171](https://github.com/ethereum/EIPs/pull/3171) aims to implement this funcionality natively, in the meantime this library should emulate the same behavior with a small cost overhead.
 
 ### Features
 
@@ -22,7 +26,15 @@ This contract library enables EVM contract creation in a similar way to CREATE2,
 
 Call the `create3` method on the `Create3` library, provide the contract `creationCode` and a salt. Different contract codes will result on the same address as long as the same salt is provided.
 
-Example:
+### Install
+
+`yarn add https://github.com/0xsequence/create3`
+
+or
+
+`npm install --save https://github.com/0xsequence/create3`
+
+### Contract example
 
 ```sol
 //SPDX-License-Identifier: Unlicense
@@ -43,3 +55,7 @@ contract Deployer {
   }
 }
 ```
+
+# License
+
+Unlicense :D
