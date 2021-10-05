@@ -13,7 +13,7 @@
     "build": "hardhat compile",
     "plot": "NODE_OPTIONS=--max-old-space-size=32000 hardhat run scripts/plot.js --max-memory 32000",
     "coverage": "COVERAGE=true hardhat coverage",
-    "prepare": "npm run clean && env COMPILE_MODE=production npm run compile"
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
