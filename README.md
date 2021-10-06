@@ -12,7 +12,7 @@ This contract library enables EVM contract creation in a similar way to CREATE2,
 
 - Deterministic contract address based on `msg.sender` + salt
 - Same contract addresses on different EVM networks
-- Lightway and without clutter
+- Lightweight and without clutter
 - Supports any EVM compatible chain with support for CREATE2
 - Payable contract creation (forwarded to child contract)
 - Constructors supported
