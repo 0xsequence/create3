@@ -11,12 +11,9 @@ library Create3 {
   error TargetAlreadyExists();
 
   /**
-    @notice Generate a creation code that results on a contract with `_code` as bytecode
-    @param _code The returning value of the resulting `creationCode`
-    @return creationCode (constructor) for new contract
-  */
-  function creationCodeFor(bytes memory _code) internal pure returns (bytes memory) {
-    /*
+    @notice The bytecode for a contract that proxies the creation of another contract
+    @dev If this code is deployed using CREATE2 it can be used to decouple `creationCode` from the child contract address
+
       0x00    0x63         0x63XXXXXX  PUSH4 _code.length  size
       0x01    0x80         0x80        DUP1                size size
       0x02    0x60         0x600e      PUSH1 14            14 size size
@@ -24,24 +21,9 @@ library Create3 {
       0x04    0x39         0x39        CODECOPY            size
       0x05    0x60         0x6000      PUSH1 00            0 size
       0x06    0xf3         0xf3        RETURN
-      <CODE>
-    */
 
-    return abi.encodePacked(
-      hex"63",
-      uint32(_code.length),
-      hex"80_60_0E_60_00_39_60_00_F3",
-      _code
-    );
-  }
+      <--- CODE --->
 
-  /**
-    @notice Generates bytecode for a contract that proxies the creation of another contract
-    @dev If this code is deployed using CREATE2 it can be used to decouple `creationCode` from the child contract address
-    @return The runtimeCode of the contract creator proxy
-  */
-  function childBytecode() internal pure returns (bytes memory) {
-    /*
       0x00    0x36         0x36      CALLDATASIZE      cds
       0x01    0x3d         0x3d      RETURNDATASIZE    0 cds
       0x02    0x80         0x80      DUP1              0 0 cds
@@ -51,9 +33,11 @@ library Create3 {
       0x06    0x34         0x34      CALLVALUE         val 0 cds
       0x07    0xf0         0xf0      CREATE            addr
       0x08    0xff         0xff      SELFDESTRUCT
-    */
-    return creationCodeFor(hex"36_3d_80_37_36_3d_34_f0_ff");
-  }
+  */
+  bytes internal constant PROXY_CHILD_BYTECODE = hex"63_00_00_00_09_80_60_0E_60_00_39_60_00_F3_36_3d_80_37_36_3d_34_f0_ff";
+
+  //                        KECCAK256_PROXY_CHILD_BYTECODE = keccak256(PROXY_CHILD_BYTECODE);
+  bytes32 internal constant KECCAK256_PROXY_CHILD_BYTECODE = 0x68afe50fe78ae96feb6ec11f21f31fdd467c9fcc7add426282cfa3913daf04e9;
 
   /**
     @notice Returns the size of the code on a given address
@@ -83,7 +67,7 @@ library Create3 {
   */
   function create3(bytes32 _salt, bytes memory _creationCode, uint256 _value) internal returns (address addr) {
     // Creation code
-    bytes memory creationCode = childBytecode();
+    bytes memory creationCode = PROXY_CHILD_BYTECODE;
 
     // Get target final address
     addr = addressOf(_salt);
@@ -114,7 +98,7 @@ library Create3 {
               hex'ff',
               address(this),
               _salt,
-              keccak256(childBytecode())
+              KECCAK256_PROXY_CHILD_BYTECODE
             )
           )
         )
@@ -126,8 +110,7 @@ library Create3 {
         uint256(
           keccak256(
             abi.encodePacked(
-              hex"d6",
-              hex"94",
+              hex"d6_94",
               proxy,
               hex"01"
             )
