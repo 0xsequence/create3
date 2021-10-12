@@ -20,7 +20,7 @@ This contract library enables EVM contract creation in a similar way to CREATE2,
 
 ### Limitations
 
-- More expensive than CREATE or CREATE2 (Fixed extra cost of ~60k gas)
+- More expensive than CREATE or CREATE2 (Fixed extra cost of ~55k gas)
 
 ## Usage
 

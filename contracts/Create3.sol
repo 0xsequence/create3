@@ -17,7 +17,7 @@ library Create3 {
   0x67363d3d37363d34f03d5260086018f3:
       0x00  0x67  0x67XXXXXXXXXXXXXXXX  PUSH8 bytecode  0x363d3d37363d34f0
       0x01  0x3d  0x3d                  RETURNDATASIZE  0 0x363d3d37363d34f0
-      0x02  0x37  0x37                  MSTORE
+      0x02  0x52  0x52                  MSTORE
       0x03  0x60  0x6008                PUSH1 08        8
       0x04  0x60  0x6018                PUSH1 18        24 8
       0x05  0xf3  0xf3                  RETURN
