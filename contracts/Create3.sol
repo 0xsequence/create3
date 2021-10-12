@@ -14,30 +14,29 @@ library Create3 {
     @notice The bytecode for a contract that proxies the creation of another contract
     @dev If this code is deployed using CREATE2 it can be used to decouple `creationCode` from the child contract address
 
-      0x00    0x63         0x63XXXXXX  PUSH4 _code.length  size
-      0x01    0x80         0x80        DUP1                size size
-      0x02    0x60         0x600e      PUSH1 14            14 size size
-      0x03    0x60         0x6000      PUSH1 00            0 14 size size
-      0x04    0x39         0x39        CODECOPY            size
-      0x05    0x60         0x6000      PUSH1 00            0 size
-      0x06    0xf3         0xf3        RETURN
+  0x67363d3d37363d34f03d5260086018f3:
+      0x00  0x67  0x67XXXXXXXXXXXXXXXX  PUSH8 bytecode  0x363d3d37363d34f0
+      0x01  0x3d  0x3d                  RETURNDATASIZE  0 0x363d3d37363d34f0
+      0x02  0x37  0x37                  MSTORE
+      0x03  0x60  0x6008                PUSH1 08        8
+      0x04  0x60  0x6018                PUSH1 18        24 8
+      0x05  0xf3  0xf3                  RETURN
 
-      <--- CODE --->
-
-      0x00    0x36         0x36      CALLDATASIZE      cds
-      0x01    0x3d         0x3d      RETURNDATASIZE    0 cds
-      0x02    0x80         0x80      DUP1              0 0 cds
-      0x03    0x37         0x37      CALLDATACOPY
-      0x04    0x36         0x36      CALLDATASIZE      cds
-      0x05    0x3d         0x3d      RETURNDATASIZE    0 cds
-      0x06    0x34         0x34      CALLVALUE         val 0 cds
-      0x07    0xf0         0xf0      CREATE            addr
-      0x08    0xff         0xff      SELFDESTRUCT
+  0x363d3d37363d34f0:
+      0x00  0x36  0x36                  CALLDATASIZE    cds
+      0x01  0x3d  0x3d                  RETURNDATASIZE  0 cds
+      0x02  0x3d  0x3d                  RETURNDATASIZE  0 0 cds
+      0x03  0x37  0x37                  CALLDATACOPY
+      0x04  0x36  0x36                  CALLDATASIZE    cds
+      0x05  0x3d  0x3d                  RETURNDATASIZE  0 cds
+      0x06  0x34  0x34                  CALLVALUE       val 0 cds
+      0x07  0xf0  0xf0                  CREATE          addr
   */
-  bytes internal constant PROXY_CHILD_BYTECODE = hex"63_00_00_00_09_80_60_0E_60_00_39_60_00_F3_36_3d_80_37_36_3d_34_f0_ff";
+  
+  bytes internal constant PROXY_CHILD_BYTECODE = hex"67_36_3d_3d_37_36_3d_34_f0_3d_52_60_08_60_18_f3";
 
   //                        KECCAK256_PROXY_CHILD_BYTECODE = keccak256(PROXY_CHILD_BYTECODE);
-  bytes32 internal constant KECCAK256_PROXY_CHILD_BYTECODE = 0x68afe50fe78ae96feb6ec11f21f31fdd467c9fcc7add426282cfa3913daf04e9;
+  bytes32 internal constant KECCAK256_PROXY_CHILD_BYTECODE = 0x21c35dbe1b344a2488cf3321d6ce542f8e9f305544ff09e4993a62319a497c1f;
 
   /**
     @notice Returns the size of the code on a given address
@@ -74,11 +73,11 @@ library Create3 {
     if (codeSize(addr) != 0) revert TargetAlreadyExists();
 
     // Create CREATE2 proxy
-    address proxy; assembly { proxy := create2(_value, add(creationCode, 32), mload(creationCode), _salt)}
+    address proxy; assembly { proxy := create2(0, add(creationCode, 32), mload(creationCode), _salt)}
     if (proxy == address(0)) revert ErrorCreatingProxy();
 
     // Call proxy with final init code
-    (bool success,) = proxy.call(_creationCode);
+    (bool success,) = proxy.call{ value: _value }(_creationCode);
     if (!success || codeSize(addr) == 0) revert ErrorCreatingContract();
   }
 
